@@ -10,6 +10,7 @@ from src.utils.sfen import get_data_from_sfen, get_gokaku_sfen_paths, load_sfens
 def argparse():
     parser = ArgumentParser(description='Make dataset')
     parser.add_argument('--test_size', type=float, default=0.1)
+    parser.add_argument('--hcpe_num', type=int, default=None)
     args, _ = parser.parse_known_args()
     return args
 
@@ -35,6 +36,8 @@ def main(args):
     # selfplayの棋譜
     hcpe_paths = sorted(hcpe_dir.glob('selfplay-*'))
     hcpes = load_hcpes(hcpe_paths)
+    if args.hcpe_num is not None:
+        hcpes = hcpes[:args.hcpe_num]
     data = get_data_from_hcpe(hcpes)
 
     train_data, valid_data = train_test_split(data, test_size=args.test_size, random_state=42)
