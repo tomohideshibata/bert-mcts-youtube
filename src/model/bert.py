@@ -63,4 +63,5 @@ class BertPolicyValue(nn.Module):
             loss_policy = self.loss_policy_fn(policy, labels['labels'])
             loss_value = self.loss_value_fn(value, labels['values'])
             loss = loss_policy + loss_value
-            return {'loss_policy': loss_policy, 'loss_value': loss_value, 'loss': loss}
+            return {'loss_policy': loss_policy, 'loss_value': loss_value, 'loss': loss,
+                    'policy_logits': policy, 'labels': labels['labels']}

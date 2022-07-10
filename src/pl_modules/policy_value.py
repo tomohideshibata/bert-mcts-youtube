@@ -3,6 +3,7 @@ from pathlib import Path
 import numpy as np
 import pytorch_lightning as pl
 from torch.utils.data import DataLoader
+import torchmetrics
 from transformers import AdamW
 
 from src.data.policy_value import PolicyValueDataset
@@ -15,6 +16,7 @@ class PolicyValueModule(pl.LightningModule):
         # self.hparams = hparams
         self.hparams.update(hparams)
         self.model = BertPolicyValue(hparams['model_dir'])
+        self.val_acc_policy = torchmetrics.Accuracy()
 
     def forward(self, input_ids, labels=None):
         output = self.model(input_ids, labels)
@@ -30,6 +32,7 @@ class PolicyValueModule(pl.LightningModule):
         output = self(input_ids, batch)
         for k, v in output.items():
             output[k] = v.detach().cpu().numpy()
+        self.val_acc_policy.update(output['policy_logits'], output['labels'])
         return output
 
     def validation_epoch_end(self, outputs):
@@ -39,6 +42,8 @@ class PolicyValueModule(pl.LightningModule):
         self.log('val_loss', val_loss)
         self.log('val_loss_policy', val_loss_policy)
         self.log('val_loss_value', val_loss_value)
+        self.log('valid_acc_policy', self.valid_acc_policy.compute())
+        self.valid_acc_policy.reset()
 
     def configure_optimizers(self):
         return AdamW(self.parameters(), lr=5e-5)
