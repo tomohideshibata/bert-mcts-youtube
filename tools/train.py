@@ -13,7 +13,8 @@ def argparse():
     parser = ArgumentParser()
     parser.add_argument('cfg', type=str)
     parser.add_argument('--log_dir', type=str, default='./work_dirs')
-    parser.add_argument('--ckpt_path', type=str, default='')
+    parser.add_argument('--ckpt_path', type=str, default=None)
+    parser.add_argument('--version', type=int, default=None)
     parser = pl.Trainer.add_argparse_args(parser)
     args, _ = parser.parse_known_args()
     return args
@@ -30,14 +31,15 @@ def main(args):
     # Disable default checkpoint callback
     args.checkpoint_callback = False
     trainer = pl.Trainer.from_argparse_args(args)
-    trainer.logger = pl_loggers.TensorBoardLogger(save_dir=args.log_dir, name=Path(args.cfg).stem, default_hp_metric=False)
+    trainer.logger = pl_loggers.TensorBoardLogger(save_dir=args.log_dir,
+                                                  name=Path(args.cfg).stem,
+                                                  default_hp_metric=False,
+                                                  version=args.version)
     trainer.callbacks.append(ModelCheckpoint(filename='{step:07d}-{val_loss:.2f}', monitor='val_loss',
                                              save_top_k=1, save_last=True))
 
     model, data = get_pl_modules(cfg)
-    if args.ckpt_path:
-        model = model.load_from_checkpoint(args.ckpt_path)
-    trainer.fit(model, datamodule=data)
+    trainer.fit(model, datamodule=data, ckpt_path=args.ckpt_path)
 
 
 if __name__ == '__main__':

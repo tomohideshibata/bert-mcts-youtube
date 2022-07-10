@@ -12,7 +12,8 @@ from src.model.bert import BertPolicyValue
 class PolicyValueModule(pl.LightningModule):
     def __init__(self, hparams):
         super().__init__()
-        self.hparams = hparams
+        # self.hparams = hparams
+        self.hparams.update(hparams)
         self.model = BertPolicyValue(hparams['model_dir'])
 
     def forward(self, input_ids, labels=None):
