@@ -30,9 +30,11 @@ class PolicyValueModule(pl.LightningModule):
     def validation_step(self, batch, batch_idx):
         input_ids = batch.pop('input_ids')
         output = self(input_ids, batch)
+        self.val_acc_policy.update(output['policy_logits'], output['labels'])        
         for k, v in output.items():
+            if k == "policy_logits" or k == "labels":
+                continue
             output[k] = v.detach().cpu().numpy()
-        self.val_acc_policy.update(output['policy_logits'], output['labels'])
         return output
 
     def validation_epoch_end(self, outputs):
@@ -42,8 +44,8 @@ class PolicyValueModule(pl.LightningModule):
         self.log('val_loss', val_loss)
         self.log('val_loss_policy', val_loss_policy)
         self.log('val_loss_value', val_loss_value)
-        self.log('valid_acc_policy', self.valid_acc_policy.compute())
-        self.valid_acc_policy.reset()
+        self.log('val_acc_policy', self.val_acc_policy.compute())
+        self.val_acc_policy.reset()
 
     def configure_optimizers(self):
         return AdamW(self.parameters(), lr=5e-5)
