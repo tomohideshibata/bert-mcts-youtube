@@ -6,6 +6,6 @@ def get_pl_modules(cfg):
     if cfg.model_type == 'MLM':
         return MLMModule(cfg), MLMDataModule(cfg)
     elif cfg.model_type == 'PolicyValue':
-        return PolicyValueModule(cfg), PolicyValueDataModule(cfg)
+        return PolicyValueModule(hparams=cfg), PolicyValueDataModule(cfg)
     else:
         raise NotImplementedError
