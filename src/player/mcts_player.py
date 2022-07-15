@@ -31,7 +31,7 @@ class MCTSPlayer(BasePlayer):
         self.playout_count = 0
 
     def usi(self):
-        print('id name BERT-MCTS')
+        print('id name TrShogi')
         print('usiok')
 
     def isready(self):
