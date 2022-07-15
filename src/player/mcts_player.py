@@ -214,7 +214,7 @@ class MCTSPlayer(BasePlayer):
         current_node.child_value_sum[next_c_idx] += result
         current_node.child_moves_count[next_c_idx] += 1
         # 手を戻す
-        self.board.pop(next_move)
+        self.board.pop()
 
         return 1 - result
 

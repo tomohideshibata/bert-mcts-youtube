@@ -87,7 +87,7 @@ class NodeHash:
             if child_n_indices[i] != NOT_EXPANDED and not self.node_hash[child_n_indices[i]].flag:
                 board.push(child_moves[i])
                 self.save_used_hash(board, uct_nodes, child_n_indices[i])
-                board.pop(child_moves[i])
+                board.pop()
 
     # 古いハッシュを削除
     def delete_old_hash(self, board, uct_node):
