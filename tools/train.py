@@ -36,7 +36,7 @@ def main(args):
                                                   default_hp_metric=False,
                                                   version=args.version)
     trainer.callbacks.append(ModelCheckpoint(filename='{step:07d}-{val_loss:.2f}', monitor='val_loss',
-                                             save_top_k=1, save_last=True))
+                                             save_top_k=1, save_last=True, save_on_train_epoch_end=True))
 
     model, data = get_pl_modules(cfg)
     trainer.fit(model, datamodule=data, ckpt_path=args.ckpt_path)
