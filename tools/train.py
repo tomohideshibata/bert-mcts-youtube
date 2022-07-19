@@ -5,6 +5,7 @@ import pytorch_lightning as pl
 from omegaconf import OmegaConf
 from pytorch_lightning import loggers as pl_loggers
 from pytorch_lightning.callbacks import ModelCheckpoint
+from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
 from src.pl_modules import get_pl_modules
 
@@ -37,6 +38,7 @@ def main(args):
                                                   version=args.version)
     trainer.callbacks.append(ModelCheckpoint(filename='{step:07d}-{val_loss:.2f}', monitor='val_loss',
                                              save_top_k=1, save_last=True, save_on_train_epoch_end=True))
+    trainer.callbacks.append(EarlyStopping(monitor='val_loss', patience=1, check_on_train_epoch_end=True))
 
     model, data = get_pl_modules(cfg)
     trainer.fit(model, datamodule=data, ckpt_path=args.ckpt_path)
