@@ -16,7 +16,7 @@ class PolicyValueModule(pl.LightningModule):
         # self.hparams = hparams
         if hparams is not None:
             self.hparams.update(hparams)
-        self.model = BertPolicyValue(sefl.hparams['model_dir'] if hparams is not None else None)
+        self.model = BertPolicyValue(self.hparams['model_dir'] if hparams is not None else None)
         self.val_acc_policy = torchmetrics.Accuracy()
 
     def forward(self, input_ids, labels=None):
