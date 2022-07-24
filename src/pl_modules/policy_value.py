@@ -49,7 +49,7 @@ class PolicyValueModule(pl.LightningModule):
         self.val_acc_policy.reset()
 
     def configure_optimizers(self):
-        return AdamW(self.parameters(), lr=self.params.learning_rate)
+        return AdamW(self.parameters(), lr=self.hparams.learning_rate)
 
 
 class PolicyValueDataModule(pl.LightningDataModule):
