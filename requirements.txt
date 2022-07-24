@@ -1,6 +1,10 @@
 --find-links https://download.pytorch.org/whl/torch_stable.html
-torch>=1.6
-pytorch-lightning==1.6.0
+torch
+pytorch-lightning==1.6.5
+torchtext
+torchvision
 transformers>=4.5
 cshogi
 omegaconf
+protobuf==3.9.2
+
