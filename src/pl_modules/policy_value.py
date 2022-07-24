@@ -16,7 +16,7 @@ class PolicyValueModule(pl.LightningModule):
         # self.hparams = hparams
         if hparams is not None:
             self.hparams.update(hparams)
-        self.model = BertPolicyValue(hparams['model_dir'] if hparams is not None else None)
+        self.model = BertPolicyValue(sefl.hparams['model_dir'] if hparams is not None else None)
         self.val_acc_policy = torchmetrics.Accuracy()
 
     def forward(self, input_ids, labels=None):
@@ -49,7 +49,7 @@ class PolicyValueModule(pl.LightningModule):
         self.val_acc_policy.reset()
 
     def configure_optimizers(self):
-        return AdamW(self.parameters(), lr=self.hparams.learning_rate)
+        return AdamW(self.parameters(), lr=self.hparams["train_params"]["learning_rate"])
 
 
 class PolicyValueDataModule(pl.LightningDataModule):
