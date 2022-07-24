@@ -45,7 +45,7 @@ class PolicyValueModule(pl.LightningModule):
         self.log('val_loss', val_loss)
         self.log('val_loss_policy', val_loss_policy)
         self.log('val_loss_value', val_loss_value)
-        self.log('val_acc_policy', self.val_acc_policy.compute())
+        self.log('val_acc_policy', self.val_acc_policy.compute(), prog_bar=True)
         self.val_acc_policy.reset()
 
     def configure_optimizers(self):
