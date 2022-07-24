@@ -4,7 +4,7 @@ import numpy as np
 import pytorch_lightning as pl
 from torch.utils.data import DataLoader
 import torchmetrics
-from transformers import AdamW
+from transformers import AdamW, get_linear_schedule_with_warmup
 
 from src.data.policy_value import PolicyValueDataset
 from src.model.bert import BertPolicyValue
