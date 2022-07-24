@@ -21,6 +21,9 @@ val_loader:
 train_params:
   max_epochs: 1
   learning_rate: 5e-5
+  weight_decay: 0.0
+  adam_epsilon: 1e-8
+  warmup_steps: 1000
   # validationおよびcheckpointの間隔step数
   val_check_interval: 30000
   limit_val_batches: 1.0
