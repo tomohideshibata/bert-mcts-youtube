@@ -34,6 +34,12 @@ class MCTSPlayer(BasePlayer):
         print('id name TrShogi')
         print('usiok')
 
+    def setoption(self, args):
+        if args[1] == 'debug':
+            self.debug = args[3] == 'true'
+        elif args[1] == 'playout_halt':
+            self.playout_halt = int(args[3])
+
     def isready(self):
         if self.model is None:
             self.model = PolicyValueModule.load_from_checkpoint(self.ckpt_path).model
