@@ -123,6 +123,16 @@ class MCTSPlayer(BasePlayer):
             if self.interruption_check() or not self.node_hash.enough_size:
                 break
 
+        if self.debug is True:
+            for i in range(len(current_node.child_moves)):
+                print('{:3}:{:5} move_count:{:4} nn_rate:{:.5f} win_rate:{:.5f}'.format(
+                    i, cshogi.move_to_usi(current_node.child_moves[i]),
+                    current_node.child_moves_count[i],
+                    current_node.policy[i],
+                    current_node.child_value_sum[i] / current_node.child_moves_count[i] \
+                    if current_node.child_moves_count[i] > 0 else 0
+                ))
+
         bestmove = get_bestmove_and_print_info()
         print('bestmove', bestmove)
 
