@@ -38,7 +38,8 @@ def main(args):
                                                   version=args.version)
     trainer.callbacks.append(ModelCheckpoint(filename='{step:07d}-{val_loss:.2f}', monitor='val_loss',
                                              save_top_k=1, save_last=True, save_on_train_epoch_end=True))
-    trainer.callbacks.append(EarlyStopping(monitor='val_loss', patience=1, check_on_train_epoch_end=True))
+    trainer.callbacks.append(EarlyStopping(monitor='val_loss', patience=1, check_on_train_epoch_end=True,
+                                           verbose=True))
     trainer.callbacks.append(LearningRateMonitor(logging_interval='step'))
 
     model, data = get_pl_modules(cfg)
