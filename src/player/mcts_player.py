@@ -77,7 +77,7 @@ class MCTSPlayer(BasePlayer):
             # 探索にかかった時間を求める
             finish_time = time.time() - begin_time
 
-            if self.board.move_number < 5:
+            if self.debug is False and self.board.move_number < 5:
                 selected_index = np.random.choice(np.arange(child_num), p=current_node.policy)
             else:
                 # 訪問回数最大の手を選択する
@@ -124,7 +124,10 @@ class MCTSPlayer(BasePlayer):
                 break
 
         if self.debug is True:
-            for i in range(len(current_node.child_moves)):
+            for i, _ in sorted(enumerate(current_node.child_moves),
+                               key=lambda x: -current_node.child_moves_count[x[0]]):
+                if current_node.child_moves_count[i] == 1:
+                    break
                 print('{:3}:{:5} move_count:{:4} nn_rate:{:.5f} win_rate:{:.5f}'.format(
                     i, cshogi.move_to_usi(current_node.child_moves[i]),
                     current_node.child_moves_count[i],
