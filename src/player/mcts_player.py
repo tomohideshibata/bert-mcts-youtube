@@ -16,13 +16,14 @@ from src.utils.misc import boltzmann
 
 
 class MCTSPlayer(BasePlayer):
-    def __init__(self, ckpt_path, playout_halt=1000, temperature=1, resign_threshold=0.01, c_puct=1):
+    def __init__(self, ckpt_path, playout_halt=1000, temperature=1, resign_threshold=0.01, c_puct=1, debug=False):
         super().__init__()
         self.ckpt_path = ckpt_path
         self.playout_halt = playout_halt
         self.temperature = temperature
         self.resign_threshold = resign_threshold
         self.c_puct = c_puct
+        self.debug = debug
 
         self.model = None
         self.node_hash = NodeHash()
@@ -73,6 +74,23 @@ class MCTSPlayer(BasePlayer):
             print('bestmove', cshogi.move_to_usi(child_moves[0]))
             return
 
+        def get_bestmove_seq(bestmove, current_node, selected_index):
+            pv = bestmove
+            
+            target_node = current_node
+            target_selected_index = selected_index
+
+            while target_node.child_moves is not None:
+                next_n_idx = target_node.child_n_indices[target_selected_index]
+                target_node = self.uct_nodes[next_n_idx]
+                if target_node is None or target_node.child_moves is None or target_node.move_count == 0:
+                    break
+
+                target_selected_index = np.argmax(target_node.child_moves_count)
+                pv += " " + cshogi.move_to_usi(target_node.child_moves[target_selected_index])
+
+            return pv
+            
         def get_bestmove_and_print_info():
             # 探索にかかった時間を求める
             finish_time = time.time() - begin_time
@@ -94,7 +112,10 @@ class MCTSPlayer(BasePlayer):
             if best_wp < self.resign_threshold:
                 bestmove = 'resign'
             else:
+                # 一手目のみ
                 bestmove = cshogi.move_to_usi(child_moves[selected_index])
+                # それ以降
+                bestmove = get_bestmove_seq(bestmove, current_node, selected_index)
 
             # valueを評価値のスケールに変換
             if best_wp == 1:
