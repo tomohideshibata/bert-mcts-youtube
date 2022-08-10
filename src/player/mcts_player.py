@@ -73,7 +73,7 @@ class MCTSPlayer(BasePlayer):
             # プレイアウト数固定
             self.playout_halt = nodes
         else:
-            self.remaining_time, inc = (btime, binc) if self.board.turn == BLACK else (wtime, winc)
+            self.remaining_time, inc = (btime, binc) if self.board.turn == cshogi.BLACK else (wtime, winc)
             if self.remaining_time is None and byoyomi is None and inc is None:
                 # 時間指定がない場合
                 self.playout_halt = DEFAULT_CONST_PLAYOUT
