@@ -32,7 +32,7 @@ def usi(player: BasePlayer):
                     for i in range(0, len(args) - 1, 2):
                         if args[i] in ['btime', 'wtime', 'byoyomi', 'binc', 'winc', 'nodes']:
                             kwargs[args[i]] = int(args[i + 1])
-            self.set_limits(**kwargs)
+            player.set_limits(**kwargs)
 
             player.go()
         elif cmd[0] == 'quit':
