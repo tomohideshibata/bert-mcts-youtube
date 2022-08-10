@@ -20,6 +20,20 @@ def usi(player: BasePlayer):
             moves = cmd[1].split(' ')
             player.position(moves)
         elif cmd[0] == 'go':
+            kwargs = {}
+            if len(cmd) > 1:
+                args = cmd[1].split(' ')
+                if args[0] == 'infinite':
+                    kwargs['infinite'] = True
+                else:
+                    if args[0] == 'ponder':
+                        kwargs['ponder'] = True
+                        args = args[1:]
+                    for i in range(0, len(args) - 1, 2):
+                        if args[i] in ['btime', 'wtime', 'byoyomi', 'binc', 'winc', 'nodes']:
+                            kwargs[args[i]] = int(args[i + 1])
+            self.set_limits(**kwargs)
+
             player.go()
         elif cmd[0] == 'quit':
             player.quit()

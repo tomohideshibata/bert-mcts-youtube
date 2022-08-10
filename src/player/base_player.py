@@ -28,7 +28,13 @@ class BasePlayer:
         # for debug
         print(self.board.sfen())
 
+        def set_limits(self, btime=None, wtime=None, byoyomi=None, binc=None, winc=None, nodes=None, infinite=False, ponder=False):
+        pass
+
     def go(self):
+        pass
+
+    def ponderhit(self, last_limits):
         pass
 
     def quit(self):

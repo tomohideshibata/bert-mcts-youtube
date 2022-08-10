@@ -14,6 +14,10 @@ from src.player.usi import usi
 from src.uct.uct_node import NOT_EXPANDED, NodeHash, UCT_HASH_SIZE, UctNode
 from src.utils.misc import boltzmann
 
+# デフォルト秒読みマージン(ms)
+DEFAULT_BYOYOMI_MARGIN = 100
+# デフォルトプレイアウト数
+DEFAULT_CONST_PLAYOUT = 1000
 
 class MCTSPlayer(BasePlayer):
     def __init__(self, ckpt_path, playout_halt=1000, temperature=1, resign_threshold=0.01, c_puct=1, debug=False):
@@ -30,7 +34,10 @@ class MCTSPlayer(BasePlayer):
         self.uct_nodes = [UctNode() for _ in range(UCT_HASH_SIZE)]
         self.current_n_idx = None
         self.playout_count = 0
-
+        
+        # 秒読みマージン(ms)
+        self.byoyomi_margin = DEFAULT_BYOYOMI_MARGIN
+        
     def usi(self):
         print('id name TrShogi')
         print('usiok')
@@ -49,6 +56,42 @@ class MCTSPlayer(BasePlayer):
         self.node_hash.initialize()
         print('readyok')
 
+    def set_limits(self,
+                   btime=None,
+                   wtime=None,
+                   byoyomi=None,
+                   binc=None,
+                   winc=None,
+                   nodes=None,
+                   infinite=False,
+                   ponder=False):
+        # 探索回数の閾値を設定
+        if infinite or ponder:
+            # infiniteもしくはponderの場合は、探索を打ち切らないため、32ビット整数の最大値を設定する
+            self.playout_halt = 2**31-1
+        elif nodes:
+            # プレイアウト数固定
+            self.playout_halt = nodes
+        else:
+            self.remaining_time, inc = (btime, binc) if self.board.turn == BLACK else (wtime, winc)
+            if self.remaining_time is None and byoyomi is None and inc is None:
+                # 時間指定がない場合
+                self.playout_halt = DEFAULT_CONST_PLAYOUT
+            else:
+                self.minimum_time = 0
+                self.remaining_time = int(self.remaining_time) if self.remaining_time else 0
+                inc = int(inc) if inc else 0
+                self.time_limit = self.remaining_time / (14 + max(0, 30 - self.board.move_number)) + inc
+                # 秒読みの場合
+                if byoyomi:
+                    byoyomi = int(byoyomi) - self.byoyomi_margin
+                    self.minimum_time = byoyomi
+                    # time_limitが秒読み以下の場合、秒読みに設定
+                    if self.time_limit < byoyomi:
+                        self.time_limit = byoyomi
+                self.extend_time = self.time_limit > self.minimum_time
+                self.playout_halt = None
+                
     def go(self):
         if self.board.is_game_over():
             print('bestmove resign')
