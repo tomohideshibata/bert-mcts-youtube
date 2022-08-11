@@ -37,6 +37,8 @@ class MCTSPlayer(BasePlayer):
         
         # 秒読みマージン(ms)
         self.byoyomi_margin = DEFAULT_BYOYOMI_MARGIN
+
+        self.begin_time = None
         
     def usi(self):
         print('id name TrShogi')
@@ -104,7 +106,7 @@ class MCTSPlayer(BasePlayer):
         self.node_hash.delete_old_hash(self.board, self.uct_nodes)
 
         # 探索開始時刻
-        begin_time = time.time()
+        self.begin_time = time.time()
 
         # ルートノードの展開
         self.current_n_idx = self.expand_node()
@@ -136,7 +138,7 @@ class MCTSPlayer(BasePlayer):
             
         def get_bestmove_and_print_info():
             # 探索にかかった時間を求める
-            finish_time = time.time() - begin_time
+            finish_time = time.time() - self.begin_time
 
             if self.debug is False and self.board.move_number < 5:
                 selected_index = np.random.choice(np.arange(child_num), p=current_node.policy)
@@ -177,7 +179,7 @@ class MCTSPlayer(BasePlayer):
 
         # プレイアウトを繰り返す
         # 探索回数が閾値を超える、または探索が打ち切られたらループを抜ける
-        while self.playout_count < self.playout_halt:
+        while True:
             self.playout_count += 1
             self.uct_search(self.current_n_idx)
             # 10回に1回 読みの状況を出力
@@ -316,12 +318,27 @@ class MCTSPlayer(BasePlayer):
 
     # 探索を打ち切るか確認
     def interruption_check(self):
-        child_move_count = self.uct_nodes[self.current_n_idx].child_moves_count
-        rest = self.playout_halt - self.playout_count
+        if self.playout_halt is not None:
+            if self.playout_count == self.playout_halt:
+                return True
 
+        child_move_count = self.uct_nodes[self.current_n_idx].child_moves_count
+
+        # 消費時間
+        spend_time = int((time.time() - self.begin_time) * 1000)
+
+        # 消費時間が短すぎる場合、もしくは秒読みの場合は打ち切らない
+        if spend_time * 10 < self.time_limit or spend_time < self.minimum_time:
+            return False
+        
         # 探索回数が最も多い手と次に多いてを求める
         second, first = child_move_count[np.argpartition(child_move_count, -2)[-2:]]
 
+        # 探索速度から残りの時間で探索できるプレイアウト数を見積もる
+        rest = int(self.playout_count * ((self.time_limit - spend_time) / spend_time))
+        
+        # rest = self.playout_halt - self.playout_count
+        
         # 残りの探索を全て次善手に費やしても最善手を超えられない場合は探索を打ち切る
         if first - second > rest:
             return True
