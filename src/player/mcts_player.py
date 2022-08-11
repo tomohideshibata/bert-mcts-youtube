@@ -211,7 +211,7 @@ class MCTSPlayer(BasePlayer):
                 ))
             
         if self.debug is True:
-            print_verbose(current_node, indent=0)
+            print_moves_verbose(current_node, indent=0)
             
         bestmove = get_bestmove_and_print_info()
         print('bestmove', bestmove)
