@@ -209,6 +209,10 @@ class MCTSPlayer(BasePlayer):
                     target_node.child_value_sum[i] / target_node.child_moves_count[i] \
                     if target_node.child_moves_count[i] > 0 else 0
                 ))
+                if target_node.child_n_indices[i] == NOT_EXPANDED:
+                    continue
+                print_moves_verbose(self.uct_nodes[target_node.child_n_indices[i]],
+                                    indent + 1)
             
         if self.debug is True:
             print_moves_verbose(current_node, indent=0)
