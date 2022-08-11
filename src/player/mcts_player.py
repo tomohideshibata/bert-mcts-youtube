@@ -196,19 +196,23 @@ class MCTSPlayer(BasePlayer):
             if self.interruption_check() or not self.node_hash.enough_size:
                 break
 
-        if self.debug is True:
-            for i, _ in sorted(enumerate(current_node.child_moves),
-                               key=lambda x: -current_node.child_moves_count[x[0]]):
-                if current_node.child_moves_count[i] == 1:
+        def print_moves_verbose(target_node, indent=0):
+            for i, _ in sorted(enumerate(target_node.child_moves),
+                               key=lambda x: -target_node.child_moves_count[x[0]]):
+                if target_node.child_moves_count[i] == 1:
                     break
-                print('{:3}:{:5} move_count:{:4} nn_rate:{:.5f} win_rate:{:.5f}'.format(
-                    i, cshogi.move_to_usi(current_node.child_moves[i]),
-                    current_node.child_moves_count[i],
-                    current_node.policy[i],
-                    current_node.child_value_sum[i] / current_node.child_moves_count[i] \
-                    if current_node.child_moves_count[i] > 0 else 0
+                print('{}{:3}:{:5} move_count:{:4} nn_rate:{:.5f} win_rate:{:.5f}'.format(
+                    indent,
+                    i, cshogi.move_to_usi(target_node.child_moves[i]),
+                    target_node.child_moves_count[i],
+                    target_node.policy[i],
+                    target_node.child_value_sum[i] / target_node.child_moves_count[i] \
+                    if target_node.child_moves_count[i] > 0 else 0
                 ))
-
+            
+        if self.debug is True:
+            print_verbose(current_node, indent=0)
+            
         bestmove = get_bestmove_and_print_info()
         print('bestmove', bestmove)
 
