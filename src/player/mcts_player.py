@@ -199,10 +199,10 @@ class MCTSPlayer(BasePlayer):
         def print_moves_verbose(target_node, indent=0):
             for i, _ in sorted(enumerate(target_node.child_moves),
                                key=lambda x: -target_node.child_moves_count[x[0]]):
-                if target_node.child_moves_count[i] == 1:
+                if target_node.child_moves_count[i] <= 1:
                     break
                 print('{}{:03}:{:5} move_count:{:4} nn_rate:{:.5f} win_rate:{:.5f}'.format(
-                    " " * (indent * 2) ,
+                    "_" * (indent * 2),
                     i, cshogi.move_to_usi(target_node.child_moves[i]),
                     target_node.child_moves_count[i],
                     target_node.policy[i],
@@ -212,7 +212,7 @@ class MCTSPlayer(BasePlayer):
                 if target_node.child_n_indices[i] == NOT_EXPANDED:
                     continue
                 print_moves_verbose(self.uct_nodes[target_node.child_n_indices[i]],
-                                    indent + 1)
+                                    indent=indent + 1)
             
         if self.debug is True:
             print_moves_verbose(current_node, indent=0)
