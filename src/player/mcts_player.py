@@ -302,11 +302,8 @@ class MCTSPlayer(BasePlayer):
                 child_node = self.uct_nodes[next_n_idx]
                 result = 1 - child_node.value
         else:
-            if self.uct_nodes[next_n_idx].value == VALUE_WIN:
-                result = 0.0
-            else:
-                # 展開済みなら一手深く読む
-                result = self.uct_search(next_n_idx)
+            # 展開済みなら一手深く読む
+            result = self.uct_search(next_n_idx)
 
         # バックアップ
         # 探索結果の反映
