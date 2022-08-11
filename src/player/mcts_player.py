@@ -19,6 +19,13 @@ DEFAULT_BYOYOMI_MARGIN = 100
 # デフォルトプレイアウト数
 DEFAULT_CONST_PLAYOUT = 1000
 
+# 勝ちを表す定数（数値に意味はない）
+VALUE_WIN = 10000
+# 負けを表す定数（数値に意味はない）
+VALUE_LOSE = -10000
+# 引き分けを表す定数（数値に意味はない）
+VALUE_DRAW = 20000
+
 class MCTSPlayer(BasePlayer):
     def __init__(self, ckpt_path, playout_halt=1000, temperature=1, resign_threshold=0.01, c_puct=1, debug=False):
         super().__init__()
@@ -283,15 +290,23 @@ class MCTSPlayer(BasePlayer):
         self.board.push(next_move)
 
         if next_n_idx == NOT_EXPANDED:
-            # 選択した手に対応するコードが未展開なら展開
-            # ノードの展開（ノード展開処理の中でノードを評価する）
-            next_n_idx = self.expand_node()
-            child_n_indices[next_c_idx] = next_n_idx
-            child_node = self.uct_nodes[next_n_idx]
-            result = 1 - child_node.value
+            # 3手詰めチェック
+            if self.board.mate_move(3):
+                self.uct_nodes[next_n_idx].value = VALUE_WIN
+                result = 0.0
+            else:
+                # 選択した手に対応するコードが未展開なら展開
+                # ノードの展開（ノード展開処理の中でノードを評価する）
+                next_n_idx = self.expand_node()
+                child_n_indices[next_c_idx] = next_n_idx
+                child_node = self.uct_nodes[next_n_idx]
+                result = 1 - child_node.value
         else:
-            # 展開済みなら一手深く読む
-            result = self.uct_search(next_n_idx)
+            if self.uct_nodes[next_n_idx].value == VALUE_WIN:
+                result = 0.0
+            else:
+                # 展開済みなら一手深く読む
+                result = self.uct_search(next_n_idx)
 
         # バックアップ
         # 探索結果の反映
