@@ -220,7 +220,7 @@ class MCTSPlayer(BasePlayer):
         bestmove = get_bestmove_and_print_info()
         print('bestmove', bestmove)
 
-    def expand_node(self):
+    def create_node(self):
         current_hash = self.board.zobrist_hash()
         current_turn = self.board.turn
         current_move_number = self.board.move_number
@@ -237,6 +237,11 @@ class MCTSPlayer(BasePlayer):
         current_node = self.uct_nodes[n_idx]
         current_node.reset()
 
+        return n_idx, current_node
+    
+    def expand_node(self):
+        n_idx, current_node = self.create_node()
+        
         # 候補手の展開
         current_node.child_moves = [move for move in self.board.legal_moves]
         child_num = len(current_node.child_moves)
@@ -300,18 +305,24 @@ class MCTSPlayer(BasePlayer):
         if next_n_idx == NOT_EXPANDED:
             # 3手詰めチェック
             if self.board.mate_move(3):
-                self.uct_nodes[next_n_idx].value = VALUE_WIN
+                next_n_idx, current_node = self.create_node()
+                current_node.value = VALUE_WIN
                 result = 0.0
             else:
                 # 選択した手に対応するコードが未展開なら展開
                 # ノードの展開（ノード展開処理の中でノードを評価する）
                 next_n_idx = self.expand_node()
-                child_n_indices[next_c_idx] = next_n_idx
-                child_node = self.uct_nodes[next_n_idx]
                 result = 1 - child_node.value
+                
+            child_n_indices[next_c_idx] = next_n_idx
+            child_node = self.uct_nodes[next_n_idx]
         else:
-            # 展開済みなら一手深く読む
-            result = self.uct_search(next_n_idx)
+            current_node = self.uct_nodes[next_n_idx]
+            if current_node.value == VALUE_WIN:
+                result = 0.0
+            else:
+                # 展開済みなら一手深く読む
+                result = self.uct_search(next_n_idx)
 
         # バックアップ
         # 探索結果の反映
