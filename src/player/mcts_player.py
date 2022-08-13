@@ -305,9 +305,9 @@ class MCTSPlayer(BasePlayer):
         if next_n_idx == NOT_EXPANDED:
             # 3手詰めチェック
             if self.board.mate_move(3):
-                next_n_idx, current_node = self.create_node()
+                next_n_idx, child_node = self.create_node()
                 child_n_indices[next_c_idx] = next_n_idx
-                current_node.value = VALUE_WIN
+                child_node.value = VALUE_WIN
                 result = 0.0
             else:
                 # 選択した手に対応するコードが未展開なら展開
@@ -317,8 +317,8 @@ class MCTSPlayer(BasePlayer):
                 child_node = self.uct_nodes[next_n_idx]
                 result = 1 - child_node.value
         else:
-            current_node = self.uct_nodes[next_n_idx]
-            if current_node.value == VALUE_WIN:
+            child_node = self.uct_nodes[next_n_idx]
+            if child_node.value == VALUE_WIN:
                 result = 0.0
             else:
                 # 展開済みなら一手深く読む
