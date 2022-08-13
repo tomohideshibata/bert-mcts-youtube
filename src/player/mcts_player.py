@@ -197,6 +197,9 @@ class MCTSPlayer(BasePlayer):
                 break
 
         def print_moves_verbose(target_node, indent=0):
+            if target_node is None:
+                return
+
             for i, _ in sorted(enumerate(target_node.child_moves),
                                key=lambda x: -target_node.child_moves_count[x[0]]):
                 if target_node.child_moves_count[i] <= 1:
