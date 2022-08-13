@@ -228,7 +228,7 @@ class MCTSPlayer(BasePlayer):
 
         # 合流先が検知できれば、それを返す
         if n_idx != UCT_HASH_SIZE:
-            return n_idx
+            return n_idx, self.uct_nodes[n_idx]
 
         # 空のインデックスを探す
         n_idx = self.node_hash.search_empty_index(current_hash, current_turn, current_move_number)
