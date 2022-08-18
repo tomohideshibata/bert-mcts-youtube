@@ -81,13 +81,14 @@ class NodeHash:
 
         current_node = uct_nodes[n_idx]
         child_n_indices = current_node.child_n_indices
-        child_moves = current_node.child_moves
-        child_num = len(child_moves)
-        for i in range(child_num):
-            if child_n_indices[i] != NOT_EXPANDED and not self.node_hash[child_n_indices[i]].flag:
-                board.push(child_moves[i])
-                self.save_used_hash(board, uct_nodes, child_n_indices[i])
-                board.pop()
+        if current_node.child_moves is not None:
+            child_moves = current_node.child_moves
+            child_num = len(child_moves)
+            for i in range(child_num):
+                if child_n_indices[i] != NOT_EXPANDED and not self.node_hash[child_n_indices[i]].flag:
+                    board.push(child_moves[i])
+                    self.save_used_hash(board, uct_nodes, child_n_indices[i])
+                    board.pop()
 
     # 古いハッシュを削除
     def delete_old_hash(self, board, uct_node):
