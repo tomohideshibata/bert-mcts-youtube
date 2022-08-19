@@ -153,9 +153,9 @@ class MCTSPlayer(BasePlayer):
                 # 訪問回数最大の手を選択する
                 selected_index = np.argmax(current_node.child_moves_count)
 
-            # 選択したノードの訪問回数0ならポリシーの値
+            # 選択したノードの訪問回数0なら0.5にしておく
             if current_node.child_moves_count[selected_index] == 0:
-                best_wp = current_node.policy[selected_index]
+                best_wp = 0.5
             # それ以外なら勝率の平均を出す
             else:
                 best_wp = current_node.child_value_sum[selected_index] / current_node.child_moves_count[selected_index]
