@@ -106,6 +106,14 @@ class MCTSPlayer(BasePlayer):
             print('bestmove resign')
             return
 
+        # 1手詰め    
+        if not self.board.is_check():
+            matemove = self.board.mate_move_in_1ply()
+            if matemove:
+                print('info score mate 1 pv {}'.format(cshogi.move_to_usi(matemove)), flush=True)
+                print('bestmove', cshogi.move_to_usi(matemove))
+                return
+            
         # 探索情報をクリア
         self.playout_count = 0
 
