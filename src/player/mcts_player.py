@@ -14,6 +14,8 @@ from src.player.usi import usi
 from src.uct.uct_node import NOT_EXPANDED, NodeHash, UCT_HASH_SIZE, UctNode
 from src.utils.misc import boltzmann
 
+from treelib import Node, Tree
+
 # デフォルト秒読みマージン(ms)
 DEFAULT_BYOYOMI_MARGIN = 100
 # デフォルトプレイアウト数
@@ -204,7 +206,7 @@ class MCTSPlayer(BasePlayer):
             if self.interruption_check() or not self.node_hash.enough_size:
                 break
 
-        def print_moves_verbose(target_node, indent=0):
+        def print_moves_verbose(target_node, tree, indent=0, parent=None):
             if target_node.child_moves is None:
                 return
 
@@ -220,14 +222,27 @@ class MCTSPlayer(BasePlayer):
                     target_node.child_value_sum[i] / target_node.child_moves_count[i] \
                     if target_node.child_moves_count[i] > 0 else 0
                 ))
+                node_string = '{:03}:{:5} move_count:{:4} nn_rate:{:.5f} win_rate:{:.5f}'.format(
+                    i, cshogi.move_to_usi(target_node.child_moves[i]),
+                    target_node.child_moves_count[i],
+                    target_node.policy[i],
+                    target_node.child_value_sum[i] / target_node.child_moves_count[i] \
+                    if target_node.child_moves_count[i] > 0 else 0
+                    )
+                tree.create_node(node_string, node_string, parent=parent)
+                    
                 if target_node.child_n_indices[i] == NOT_EXPANDED:
                     continue
                 print_moves_verbose(self.uct_nodes[target_node.child_n_indices[i]],
-                                    indent=indent + 1)
+                                    tree, indent=indent + 1, parent=node_string)
             
         if self.debug is True:
-            print_moves_verbose(current_node, indent=0)
+            tree = Tree()
             
+            print_moves_verbose(current_node, tree, indent=0)
+            
+            tree.show()
+
         bestmove = get_bestmove_and_print_info()
         print('bestmove', bestmove)
 
