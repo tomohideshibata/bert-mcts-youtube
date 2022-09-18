@@ -229,7 +229,7 @@ class MCTSPlayer(BasePlayer):
                     target_node.child_value_sum[i] / target_node.child_moves_count[i] \
                     if target_node.child_moves_count[i] > 0 else 0
                     )
-                tree.create_node(node_string, node_string, parent="-".join(indices))
+                tree.create_node(node_string, node_string, parent="-".join([ str(j) for j in indices ]))
                 indices.append(i)
                     
                 if target_node.child_n_indices[i] == NOT_EXPANDED:
