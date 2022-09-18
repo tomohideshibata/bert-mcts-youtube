@@ -222,8 +222,8 @@ class MCTSPlayer(BasePlayer):
                     target_node.child_value_sum[i] / target_node.child_moves_count[i] \
                     if target_node.child_moves_count[i] > 0 else 0
                 ))
-                node_string = '{:03}:{:5} move_count:{:4} nn_rate:{:.5f} win_rate:{:.5f}'.format(
-                    i, cshogi.move_to_usi(target_node.child_moves[i]),
+                node_string = '{:5} move_count:{:4} nn_rate:{:.5f} win_rate:{:.5f}'.format(
+                    cshogi.move_to_usi(target_node.child_moves[i]),
                     target_node.child_moves_count[i],
                     target_node.policy[i],
                     target_node.child_value_sum[i] / target_node.child_moves_count[i] \
