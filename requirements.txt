@@ -7,4 +7,4 @@ transformers>=4.5
 cshogi
 omegaconf
 protobuf==3.9.2
-
+treelib
