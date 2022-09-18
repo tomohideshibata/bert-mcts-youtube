@@ -231,7 +231,6 @@ class MCTSPlayer(BasePlayer):
                     )
                 tree.create_node(node_string, "-".join([ str(j) for j in indices + [i] ]),
                                  parent="-".join([ str(j) for j in indices ]))
-                indices.append(i)
                     
                 if target_node.child_n_indices[i] == NOT_EXPANDED:
                     continue
