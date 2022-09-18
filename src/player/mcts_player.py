@@ -206,7 +206,7 @@ class MCTSPlayer(BasePlayer):
             if self.interruption_check() or not self.node_hash.enough_size:
                 break
 
-        def print_moves_verbose(target_node, tree, indent=0, parent=None):
+        def print_moves_verbose(target_node, tree, indent=0, indices=[]):
             if target_node.child_moves is None:
                 return
 
@@ -229,17 +229,21 @@ class MCTSPlayer(BasePlayer):
                     target_node.child_value_sum[i] / target_node.child_moves_count[i] \
                     if target_node.child_moves_count[i] > 0 else 0
                     )
-                tree.create_node(node_string, node_string, parent=parent)
+                tree.create_node(node_string, node_string, parent="-".join(indices))
+                indices.append(i)
                     
                 if target_node.child_n_indices[i] == NOT_EXPANDED:
                     continue
                 print_moves_verbose(self.uct_nodes[target_node.child_n_indices[i]],
-                                    tree, indent=indent + 1, parent=node_string)
+                                    tree, indent=indent + 1, indices=indices)
             
         if self.debug is True:
             tree = Tree()
+
+            # dummy root node
+            tree.create_node("root", "0")
             
-            print_moves_verbose(current_node, tree, indent=0)
+            print_moves_verbose(current_node, tree, indent=0, indices=[ 0 ])
             
             tree.show()
 
