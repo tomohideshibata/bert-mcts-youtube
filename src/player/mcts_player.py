@@ -3,6 +3,7 @@ from argparse import ArgumentParser
 from pathlib import Path
 
 import cshogi
+from cshogi import KIF
 import numpy as np
 import torch
 
@@ -223,7 +224,7 @@ class MCTSPlayer(BasePlayer):
                     if target_node.child_moves_count[i] > 0 else 0
                 ))
                 node_string = '{:5} move_count:{:4} nn_rate:{:.5f} win_rate:{:.5f}'.format(
-                    cshogi.KIF.move_to_kif(target_node.child_moves[i]),
+                    KIF.move_to_kif(target_node.child_moves[i]),
                     target_node.child_moves_count[i],
                     target_node.policy[i],
                     target_node.child_value_sum[i] / target_node.child_moves_count[i] \
